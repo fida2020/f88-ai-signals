@@ -6,82 +6,151 @@
 <title>F88 AI Signals</title>
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <div class="header">
-<h1>👑 F88 AI Signals</h1>
-<p>Professional AI Trading Dashboard</p>
+  <img src="logo.png" alt="F88" onerror="this.style.display='none'">
+  <h1>F88 AI Signals</h1>
+  <p>Professional AI Trading Dashboard</p>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    LIVE SIGNALS
+  </div>
+</div>
+
+<div class="session-bar">
+  <div id="sessionName">🟢 Loading...</div>
+  <div id="liveTime">--:--:--</div>
 </div>
 
 <div class="signal-card">
+  <div class="signal-type">
+    <div class="signal-dot buy" id="signalDot"></div>
+    <h2 class="buy" id="pair">BUY - BTC/USD</h2>
+  </div>
 
-<h2 id="pair">🟢 BUY - BTC/USD</h2>
+  <div class="price-grid">
+    <div class="price-box">
+      <div class="label">💰 Entry</div>
+      <div class="value entry" id="entry">106250</div>
+    </div>
+    <div class="price-box">
+      <div class="label">🛑 Stop Loss</div>
+      <div class="value sl" id="sl">105900</div>
+    </div>
+    <div class="price-box">
+      <div class="label">🎯 TP1</div>
+      <div class="value tp" id="tp1">106600</div>
+    </div>
+    <div class="price-box">
+      <div class="label">🎯 TP2</div>
+      <div class="value tp" id="tp2">106900</div>
+    </div>
+  </div>
 
-<p id="entry"><b>💰 Entry:</b> 106250</p>
+  <div class="tp3-box">
+    <div class="label">🚀 TP3 (Aggressive)</div>
+    <div class="value" id="tp3">107300</div>
+  </div>
 
-<p id="sl"><b>🛑 Stop Loss:</b> 105900</p>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="label">AI Confidence</div>
+      <div class="value" id="confidence" style="color:#c9a227">92%</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Trend</div>
+      <div class="value" id="trend" style="color:#00c853">Bullish</div>
+    </div>
+    <div class="stat-box">
+      <div class="label">Updated</div>
+      <div class="value" id="updated" style="color:#5a7099;font-size:11px">Just Now</div>
+    </div>
+  </div>
 
-<p id="tp1"><b>🎯 TP1:</b> 106600</p>
-
-<p id="tp2"><b>🎯 TP2:</b> 106900</p>
-
-<p id="tp3"><b>🚀 TP3:</b> 107300</p>
-
-<hr>
-
-<p id="confidence">🤖 AI Confidence : <b>92%</b></p>
-
-<p id="trend">📈 Trend : Bullish</p>
-
-<p>🕒 Updated : Just Now</p>
-
-<button class="btn" onclick="changeSignal()">
-🔄 Next Signal
-</button>
-
+  <p class="disclaimer">⚠️ Educational purposes only. Always manage your risk.</p>
 </div>
 
 <div class="market">
-
-<div class="box">
-<h3>🥇 Gold</h3>
-<p>XAU/USD</p>
-</div>
-
-<div class="box">
-<h3>₿ Bitcoin</h3>
-<p>BTC/USD</p>
-</div>
-
-<div class="box">
-<h3>💱 Forex</h3>
-<p>EUR/USD</p>
-</div>
-
+  <div class="box active" onclick="selectPair(this)">
+    <h3>🥇</h3>
+    <p>Gold</p>
+  </div>
+  <div class="box" onclick="selectPair(this)">
+    <h3>₿</h3>
+    <p>Bitcoin</p>
+  </div>
+  <div class="box" onclick="selectPair(this)">
+    <h3>💱</h3>
+    <p>EUR/USD</p>
+  </div>
 </div>
 
 <div class="bottom">
-
-<a href="index.html">
-🏠<br>Home
-</a>
-
-<a href="history.html">
-📊<br>History
-</a>
-
-<a href="vip.html">
-👑<br>VIP
-</a>
-
-<a href="profile.html">
-👤<br>Profile
-</a>
-
+  <a href="index.html" class="active"><span>🏠</span>Home</a>
+  <a href="history.html"><span>📊</span>History</a>
+  <a href="vip.html"><span>👑</span>VIP</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
 </div>
 
-<script type="module" src="script.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB93-AOcHZMz7_dYP_yRaDFGXi9iQ6Wxis",
+  authDomain: "f88-ai-signals.firebaseapp.com",
+  projectId: "f88-ai-signals",
+  storageBucket: "f88-ai-signals.firebasestorage.app",
+  messagingSenderId: "345283236517",
+  appId: "1:345283236517:web:a5d4d7b8f98ba99b2ef34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById("liveTime").innerText = now.toLocaleTimeString();
+  const h = now.getUTCHours();
+  let session = "🔵 Asian Session";
+  if (h >= 8 && h < 16) session = "🟢 London Session";
+  else if (h >= 13 && h < 21) session = "🟡 New York Session";
+  document.getElementById("sessionName").innerText = session;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+async function loadSignal() {
+  try {
+    const q = query(collection(db, "signals"), limit(1));
+    const snap = await getDocs(q);
+    if (!snap.empty) {
+      const s = snap.docs[0].data();
+      const isBuy = s.pair && s.pair.includes("BUY");
+      document.getElementById("pair").innerText = s.pair;
+      document.getElementById("pair").className = isBuy ? "buy" : "sell";
+      document.getElementById("signalDot").className = "signal-dot " + (isBuy ? "buy" : "sell");
+      document.getElementById("entry").innerText = s.entry;
+      document.getElementById("sl").innerText = s.sl;
+      document.getElementById("tp1").innerText = s.tp1;
+      document.getElementById("tp2").innerText = s.tp2;
+      document.getElementById("tp3").innerText = s.tp3;
+      document.getElementById("confidence").innerText = s.confidence;
+      document.getElementById("trend").innerText = s.trend;
+      document.getElementById("trend").style.color = isBuy ? "#00c853" : "#ff4444";
+      document.getElementById("updated").innerText = new Date().toLocaleTimeString();
+    }
+  } catch(e) { console.log(e); }
+}
+
+window.selectPair = function(el) {
+  document.querySelectorAll(".box").forEach(b => b.classList.remove("active"));
+  el.classList.add("active");
+};
+
+loadSignal();
+</script>
 
 </body>
 </html>
