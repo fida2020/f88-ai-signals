@@ -6,53 +6,76 @@
 <title>F88 Admin Panel</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.admin{width:90%;margin:20px auto;background:#1a1a1a;border:2px solid gold;border-radius:20px;padding:20px;}
-.admin h2{text-align:center;color:gold;margin-bottom:20px;}
-input,select{width:100%;padding:15px;margin:10px 0;background:#2a2a2a;color:white;border:1px solid gold;border-radius:10px;font-size:18px;box-sizing:border-box;}
-button{width:100%;padding:15px;margin-top:15px;background:gold;color:black;font-size:20px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;}
-button:active{transform:scale(.98);}
-#msg{text-align:center;margin-top:15px;font-size:18px;font-weight:bold;}
+label { display:block; font-size:12px; color:#5a7099; margin:10px 0 3px; text-transform:uppercase; letter-spacing:1px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+#msg { text-align:center; margin-top:15px; font-size:15px; font-weight:bold; padding:10px; border-radius:8px; }
+.save-btn { background:linear-gradient(135deg,#c9a227,#a07820); color:#000; font-size:18px; font-weight:800; border:none; border-radius:12px; padding:16px; width:100%; margin-top:15px; cursor:pointer; }
+.admin-title { text-align:center; color:#c9a227; margin-bottom:20px; }
+.admin-title h2 { font-size:20px; }
+.admin-title p { font-size:12px; color:#5a7099; margin-top:4px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-<h1>👨‍💼 Admin Panel</h1>
-<p>Create New Signal</p>
+  <h1>👨‍💼 Admin Panel</h1>
+  <p>F88 Signal Management</p>
 </div>
 
 <div class="admin">
-<h2>New Trading Signal</h2>
+  <div class="admin-title">
+    <h2>📡 Post New Signal</h2>
+    <p>Signal will go live instantly for all users</p>
+  </div>
 
-<select id="pair">
-<option>BTC/USD</option>
-<option>XAU/USD (Gold)</option>
-<option>EUR/USD</option>
-<option>ETH/USD</option>
-<option>SOL/USD</option>
-</select>
+  <label>Trading Pair</label>
+  <select id="pair">
+    <option>BTC/USD</option>
+    <option>XAU/USD (Gold)</option>
+    <option>EUR/USD</option>
+    <option>GBP/USD</option>
+    <option>ETH/USD</option>
+    <option>SOL/USD</option>
+  </select>
 
-<select id="direction">
-<option>🟢 BUY</option>
-<option>🔴 SELL</option>
-</select>
+  <label>Signal Direction</label>
+  <select id="direction">
+    <option>🟢 BUY</option>
+    <option>🔴 SELL</option>
+  </select>
 
-<input type="number" id="entry" placeholder="Entry Price">
-<input type="number" id="sl" placeholder="Stop Loss">
-<input type="number" id="tp1" placeholder="Take Profit 1">
-<input type="number" id="tp2" placeholder="Take Profit 2">
-<input type="number" id="tp3" placeholder="Take Profit 3">
-<input type="text" id="confidence" placeholder="AI Confidence (90%)">
+  <label>Entry Price</label>
+  <input type="number" id="entry" placeholder="e.g. 3320">
 
-<button onclick="saveSignal()">💾 Save Signal</button>
-<p id="msg"></p>
+  <label>Stop Loss</label>
+  <input type="number" id="sl" placeholder="e.g. 3305">
+
+  <div class="row2">
+    <div>
+      <label>Take Profit 1</label>
+      <input type="number" id="tp1" placeholder="TP1">
+    </div>
+    <div>
+      <label>Take Profit 2</label>
+      <input type="number" id="tp2" placeholder="TP2">
+    </div>
+  </div>
+
+  <label>Take Profit 3</label>
+  <input type="number" id="tp3" placeholder="TP3 Aggressive">
+
+  <label>AI Confidence</label>
+  <input type="text" id="confidence" placeholder="e.g. 88%">
+
+  <button class="save-btn" onclick="saveSignal()">💾 PUBLISH SIGNAL</button>
+  <p id="msg"></p>
 </div>
 
 <div class="bottom">
-<a href="index.html">🏠<br>Home</a>
-<a href="history.html">📊<br>History</a>
-<a href="vip.html">👑<br>VIP</a>
-<a href="profile.html">👤<br>Profile</a>
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="history.html"><span>📊</span>History</a>
+  <a href="vip.html"><span>👑</span>VIP</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
 </div>
 
 <script type="module">
@@ -78,18 +101,20 @@ window.saveSignal = async function() {
   const tp1 = document.getElementById("tp1").value;
   const tp2 = document.getElementById("tp2").value;
   const tp3 = document.getElementById("tp3").value;
-  const confidence = document.getElementById("confidence").value;
+  const confidence = document.getElementById("confidence").value || "85%";
   const msg = document.getElementById("msg");
 
   if(!entry || !sl || !tp1) {
-    msg.style.color = "red";
+    msg.style.color = "#ff4444";
+    msg.style.background = "rgba(255,68,68,0.1)";
     msg.innerText = "❌ Entry, SL aur TP1 zaroor bharein!";
     return;
   }
 
   try {
-    msg.style.color = "yellow";
-    msg.innerText = "⏳ Saving...";
+    msg.style.color = "#c9a227";
+    msg.style.background = "rgba(201,162,39,0.1)";
+    msg.innerText = "⏳ Publishing...";
 
     await addDoc(collection(db, "signals"), {
       pair, entry: Number(entry), sl: Number(sl),
@@ -99,17 +124,15 @@ window.saveSignal = async function() {
     });
 
     msg.style.color = "#00c853";
-    msg.innerText = "✅ Signal saved to database!";
+    msg.style.background = "rgba(0,200,83,0.1)";
+    msg.innerText = "✅ Signal published!";
 
-    document.getElementById("entry").value = "";
-    document.getElementById("sl").value = "";
-    document.getElementById("tp1").value = "";
-    document.getElementById("tp2").value = "";
-    document.getElementById("tp3").value = "";
-    document.getElementById("confidence").value = "";
+    ["entry","sl","tp1","tp2","tp3","confidence"].forEach(id => {
+      document.getElementById(id).value = "";
+    });
 
   } catch(e) {
-    msg.style.color = "red";
+    msg.style.color = "#ff4444";
     msg.innerText = "❌ Error: " + e.message;
   }
 }
