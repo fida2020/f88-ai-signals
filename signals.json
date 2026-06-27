@@ -1,0 +1,13 @@
+[
+  {
+    "pair": "BTC/USD",
+    "type": "BUY",
+    "entry": "106250",
+    "sl": "105900",
+    "tp1": "106600",
+    "tp2": "106900",
+    "tp3": "107300",
+    "confidence": "92%",
+    "trend": "Bullish"
+  }
+]

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F88 - Signal History</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+<h1>📊 Signal History</h1>
+<p>All saved signals from database</p>
+</div>
+
+<div id="history-list">
+<p style="color:#aaa; text-align:center; padding:20px;">Loading signals...</p>
+</div>
+
+<div class="bottom">
+<a href="index.html">🏠<br>Home</a>
+<a href="history.html">📊<br>History</a>
+<a href="vip.html">👑<br>VIP</a>
+<a href="profile.html">👤<br>Profile</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB93-AOcHZMz7_dYP_yRaDFGXi9iQ6Wxis",
+  authDomain: "f88-ai-signals.firebaseapp.com",
+  projectId: "f88-ai-signals",
+  storageBucket: "f88-ai-signals.firebasestorage.app",
+  messagingSenderId: "345283236517",
+  appId: "1:345283236517:web:a5d4d7b8f98ba99b2ef34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+try {
+  const q = query(collection(db, "signals"), limit(10));
+  const snapshot = await getDocs(q);
+  const list = document.getElementById("history-list");
+  list.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const s = doc.data();
+    const isBuy = s.pair && s.pair.includes("BUY");
+    list.innerHTML += `
+    <div class="signal-card" style="margin:10px; border-left: 4px solid ${isBuy ? '#00c853' : '#ff4444'}">
+      <h2 style="color:${isBuy ? '#00c853' : '#ff4444'}">${s.pair}</h2>
+      <p><b>💰 Entry:</b> ${s.entry}</p>
+      <p><b>🛑 SL:</b> ${s.sl}</p>
+      <p><b>🎯 TP1:</b> ${s.tp1}</p>
+      <p><b>🎯 TP2:</b> ${s.tp2}</p>
+      <p><b>🚀 TP3:</b> ${s.tp3}</p>
+      <p>🤖 Confidence: <b>${s.confidence}</b></p>
+      <p>📈 Trend: ${s.trend}</p>
+    </div>`;
+  });
+
+  if(snapshot.empty) {
+    list.innerHTML = "<p style='color:#aaa; text-align:center; padding:20px;'>No signals yet!</p>";
+  }
+} catch(e) {
+  document.getElementById("history-list").innerHTML = "<p style='color:red; text-align:center; padding:20px;'>Error: " + e.message + "</p>";
+}
+</script>
+
+</body>
+</html>

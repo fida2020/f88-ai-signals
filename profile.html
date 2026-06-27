@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - F88 AI Signals</title>
+<style>
+body{margin:0;background:#0d0d0d;font-family:Arial,sans-serif;color:white;text-align:center;padding-bottom:80px;}
+h1{color:gold;margin-top:25px;font-size:40px;}
+.card{width:85%;margin:25px auto;background:#1f1f1f;border:3px solid gold;border-radius:20px;padding:25px;}
+.avatar{font-size:80px;}
+.name{font-size:30px;font-weight:bold;margin-top:10px;}
+.info{font-size:22px;margin:18px 0;text-align:left;}
+.btn{display:inline-block;margin-top:20px;padding:15px 30px;background:#e53935;color:white;text-decoration:none;font-size:22px;border-radius:10px;font-weight:bold;}
+.bottom{position:fixed;bottom:0;left:0;width:100%;background:#202020;display:flex;justify-content:space-around;padding:12px 0;border-top:2px solid gold;}
+.bottom a{color:white;text-decoration:none;font-size:13px;text-align:center;}
+</style>
+</head>
+<body>
+
+<h1>👤 My Profile</h1>
+
+<div class="card">
+<div class="avatar">👤</div>
+<div class="name">F88 Trader</div>
+<div class="info">📧 Email : demo@f88signals.com</div>
+<div class="info">👑 VIP Status : <span style="color:#00ff66">Active</span></div>
+<div class="info">📊 Total Signals : <span id="totalSignals">Loading...</span></div>
+<div class="info">🏆 Win Rate : 92%</div>
+<div class="info">📅 Member Since : 2025</div>
+<a class="btn" href="index.html">🚪 Logout</a>
+</div>
+
+<div class="bottom">
+<a href="index.html">🏠<br>Home</a>
+<a href="history.html">📊<br>History</a>
+<a href="vip.html">👑<br>VIP</a>
+<a href="profile.html">👤<br>Profile</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB93-AOcHZMz7_dYP_yRaDFGXi9iQ6Wxis",
+  authDomain: "f88-ai-signals.firebaseapp.com",
+  projectId: "f88-ai-signals",
+  storageBucket: "f88-ai-signals.firebasestorage.app",
+  messagingSenderId: "345283236517",
+  appId: "1:345283236517:web:a5d4d7b8f98ba99b2ef34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const snapshot = await getDocs(collection(db, "signals"));
+document.getElementById("totalSignals").innerText = snapshot.size;
+</script>
+
+</body>
+</html>

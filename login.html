@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F88 Login</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.login-box{width:90%;max-width:400px;margin:80px auto;background:#1f1f1f;padding:25px;border-radius:20px;border:2px solid gold;text-align:center;}
+input{width:100%;padding:15px;margin:10px 0;background:#2b2b2b;border:1px solid gold;border-radius:10px;color:white;font-size:18px;box-sizing:border-box;}
+button{width:100%;padding:15px;margin-top:15px;background:gold;color:black;font-size:20px;font-weight:bold;border:none;border-radius:10px;cursor:pointer;}
+button:hover{background:#ffd700;}
+a{color:gold;text-decoration:none;}
+#msg{margin-top:15px;font-size:16px;font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div class="login-box">
+<h1>👑 F88 AI Signals</h1>
+<p>Login To Continue</p>
+
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="loginUser()">🔐 LOGIN</button>
+<p id="msg"></p>
+
+<br>
+<a href="#">Forgot Password?</a>
+<br><br>
+<a href="register.html">Create New Account</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB93-AOcHZMz7_dYP_yRaDFGXi9iQ6Wxis",
+  authDomain: "f88-ai-signals.firebaseapp.com",
+  projectId: "f88-ai-signals",
+  storageBucket: "f88-ai-signals.firebasestorage.app",
+  messagingSenderId: "345283236517",
+  appId: "1:345283236517:web:a5d4d7b8f98ba99b2ef34c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.loginUser = async function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+
+  if(!email || !password) {
+    msg.style.color = "red";
+    msg.innerText = "❌ Email aur password zaroor bharein!";
+    return;
+  }
+
+  try {
+    msg.style.color = "yellow";
+    msg.innerText = "⏳ Logging in...";
+
+    await signInWithEmailAndPassword(auth, email, password);
+
+    msg.style.color = "#00c853";
+    msg.innerText = "✅ Login successful!";
+
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 1000);
+
+  } catch(e) {
+    msg.style.color = "red";
+    if(e.code === "auth/user-not-found") {
+      msg.innerText = "❌ User nahi mila!";
+    } else if(e.code === "auth/wrong-password") {
+      msg.innerText = "❌ Password galat hai!";
+    } else {
+      msg.innerText = "❌ " + e.message;
+    }
+  }
+}
+</script>
+
+</body>
+</html>
